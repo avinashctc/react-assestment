@@ -1,0 +1,31 @@
+.Blogs section {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    width: 80%;
+    margin: auto;
+}
+
+.Blogs ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.Blogs li {
+    display: inline-block;
+    margin: 20px;
+}
+
+.Blogs a {
+    text-decoration: none;
+    color : #000;
+}
+
+.Blogs a:hover,
+.Blogs a:active,
+.Blogs a.active{
+    color : #fa923f;
+}
