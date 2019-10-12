@@ -6,7 +6,7 @@ const post = (props) => (
     <article className="Post" onClick={props.clicked}>
         <h1>{props.title}</h1>
         <div className="Info">
-            <span>Author : </span> {props.author ? <div className="Author">{props.author}</div> : 'Unknown'}
+            {props.author ? <div className="Author">{props.author}</div> : 'Unknown'}
         </div>
     </article>
 );

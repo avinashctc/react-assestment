@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 
 import * as actions from '../../../store/actions/index';
 import Post from '../../../components/Post/Post';
-import FullPost from '../FullPost/FullPost';
 
 class Posts extends Component {
 
@@ -19,9 +18,7 @@ class Posts extends Component {
     }
 
     render() {
-        let posts = <p style={{ fontWeight: "bold" }}>
-            Loading data ...
-        </p >;
+        let posts = <p style={{ fontWeight: "bold" }}>Loading data ...</p >;
         if (!this.props.error) {
             posts = this.props.posts.map(post => {
                 return (
@@ -30,7 +27,6 @@ class Posts extends Component {
                         author={post.author}
                         clicked={() => this.selectedPostHandler(post.id)} />
                 );
-
             });
         }
         return (
@@ -38,7 +34,6 @@ class Posts extends Component {
                 <section>
                     {posts}
                 </section>
-
             </div>
         );
     }
