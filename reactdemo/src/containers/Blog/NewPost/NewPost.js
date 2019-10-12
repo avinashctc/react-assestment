@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Validator from 'validator';
-// import axios from 'axios';
 import './NewPost.css';
 import InLineError from '../../../components/InLineError/InLineError';
 import * as actions from '../../../store/actions/index';
@@ -15,20 +14,6 @@ class NewPost extends Component {
             content: ''
         },
         errors: {},
-    }
-
-    savePostHandler = () => {
-        // const data = {
-        //     title: this.state.title,
-        //     body: this.state.content
-        // };
-
-        // axios.post('/posts', data)
-        //     .then(reponse => {
-        //         this.setState({
-        //             submitted: true
-        //         })
-        //     });
     }
 
     onSubmitPost = (event) => {
@@ -116,7 +101,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSavePost: (inputPostParam) => dispatch(actions.saveNewPost(inputPostParam))       
+        onSavePost: (inputPostParam) => dispatch(actions.saveNewPost(inputPostParam))
     }
 }
 
