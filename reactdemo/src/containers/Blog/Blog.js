@@ -1,6 +1,5 @@
 import React from 'react';
 import { Route, NavLink, Switch } from 'react-router-dom';
-import { connect } from 'react-redux';
 import Posts from '../Blog/Posts/Posts';
 import './Blog.css';
 import NewPost from '../Blog/NewPost/NewPost';
@@ -37,13 +36,4 @@ const blog = (props) => {
     );
 
 }
-
-// const mapStateToProps = state => {
-//     return {
-//         authenticated: state.authReducer.token != null
-//     }
-// }
-
-
-// export default connect(mapStateToProps)(blog);
 export default blog;
