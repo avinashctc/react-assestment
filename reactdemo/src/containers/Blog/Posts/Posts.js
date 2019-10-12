@@ -1,47 +1,29 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import { Route, NavLink } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import * as actions from '../../../store/actions/index';
 import Post from '../../../components/Post/Post';
-import FullPost from '../FullPost/FullPost.js';
+import FullPost from '../FullPost/FullPost';
 
 class Posts extends Component {
-    state = {
-        posts: []
-    };
 
     componentDidMount() {
-        axios.get('/posts')
-            .then(response => {
-                const posts = response.data.slice(0, 4);
-                const updatedPosts = posts.map(post => {
-                    return {
-                        ...post,
-                        author: "Avinash"
-                    }
-                })
-                this.setState({
-                    posts: updatedPosts
-                });
-            })
-            .catch(error => {
-                // this.setState({
-                //     error: true
-                // })
-            });
+        this.props.fetchPosts();
+        this.props.onRedirectToPost();
     }
 
     selectedPostHandler = (id) => {
+        this.props.fetchPostOnSelection();
         this.props.history.push("/" + id);
     }
 
     render() {
         let posts = <p style={{ fontWeight: "bold" }}>
-            No posts are there !!! Click on 'New Post' to add one.
+            Loading data ...
         </p >;
-        if (this.state.posts.length !== 0) {
-            posts = this.state.posts.map(post => {
+        if (!this.props.error) {
+            posts = this.props.posts.map(post => {
                 return (
                     <Post key={post.id}
                         title={post.title}
@@ -56,11 +38,24 @@ class Posts extends Component {
                 <section>
                     {posts}
                 </section>
-                <Route path="/:id" exact component={FullPost} />
+
             </div>
         );
     }
 }
 
+const mapStateToProps = state => {
+    return {
+        posts: state.postsReducer.posts,
+        error: state.postsReducer.error
+    }
+}
 
-export default Posts;
+const mapDispatchToProps = dispatch => {
+    return {
+        fetchPosts: () => dispatch(actions.fetchPosts()),
+        fetchPostOnSelection: () => dispatch(actions.fetchPostOnSelection()),
+        onRedirectToPost: () => dispatch(actions.initialisePostSubmitted())
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Posts);

@@ -1,56 +1,59 @@
 import * as actionTypes from '../actions/actionTypes';
 
-import { updateObject } from '../utility';
+const initialState = {
+    posts: [],
+    isPostSelected: false,
+    error: false,
+    post: null,
+    newPostSubmitted: false
+}
 
-const burgerBuilderReducer = (state = initialState, action) => {
+const postsReducer = (state = initialState, action) => {
 
     switch (action.type) {
-        case actionTypes.ADD_INGREDIENT:
+        case actionTypes.FETCH_POST_SUCCESS:
+            // console.log(...state, action.posts);
             return {
                 ...state,
-                ingredients: {
-                    ...state.ingredients,
-                    [action.ingredientName]: state.ingredients[action.ingredientName] + 1
-                },
-                totalPrice: state.totalPrice + INGREDIENT_PRICE[action.ingredientName],
-                purchaseable: (Object.keys(state.ingredients).map(ingKey => {
-                    return state.ingredients[ingKey]
-                }).reduce((sum, el) => {
-                    return sum + el;
-                }, 0) + 1) > 0,
-                building : true
-            }
-        case actionTypes.REMOVE_INGREDIENT:
-            return {
-                ...state,
-                ingredients: {
-                    ...state.ingredients,
-                    [action.ingredientName]: state.ingredients[action.ingredientName] > 0 ? state.ingredients[action.ingredientName] - 1 : 0
-                },
-                totalPrice: state.totalPrice - INGREDIENT_PRICE[action.ingredientName],
-                purchaseable: (Object.keys(state.ingredients).map(ingKey => {
-                    return state.ingredients[ingKey]
-                }).reduce((sum, el) => {
-                    return sum + el;
-                }, 0) - 1) > 0,
-                building: true
-            }
-        case actionTypes.SET_INGREDIENTS:
-            return {
-                ...state,
-                ingredients: action.ingredients,
-                totalPrice: 4,
-                error: false,
-                building: false
-            }
-        case actionTypes.FETCH_INGREDIENTS_FAILED:
+                posts: action.posts
+            };
+        case actionTypes.FETCH_POST_FAIL:
             return {
                 ...state,
                 error: true
-            }
+            };
+        case actionTypes.IS_POST_SELECTED:
+            return {
+                ...state,
+                isPostSelected: true
+            };
+        case actionTypes.FETCH_SELECTED_POST_SUCCESS:
+            return {
+                ...state,
+                post: action.post
+            };
+        case actionTypes.FETCH_SELECTED_POST_FAIL:
+            return {
+                ...state,
+                error: true
+            };
+        case actionTypes.ADD_NEW_POST_SUCCESS:
+            return {
+                ...state,
+                newPostSubmitted: true
+            };
+        case actionTypes.ADD_NEW_POST_FAIL:
+            return {
+                ...state,
+                error: true
+            };
+        case actionTypes.INITIALISE_POST_SUBMITTED:
+            return {
+                ...state,
+                newPostSubmitted: false
+            };
+        default: return state;
     }
-
-    return state;
 };
 
-export default burgerBuilderReducer;
+export default postsReducer;

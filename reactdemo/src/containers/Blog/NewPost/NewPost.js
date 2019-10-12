@@ -1,57 +1,124 @@
 import React, { Component } from 'react';
-
 import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import Validator from 'validator';
+// import axios from 'axios';
 import './NewPost.css';
-import axios from 'axios';
+import InLineError from '../../../components/InLineError/InLineError';
+import * as actions from '../../../store/actions/index';
 
 
 class NewPost extends Component {
     state = {
-        title: '',
-        content: '',
-        author: 'Max',
-        submitted: false
+        data: {
+            title: '',
+            content: ''
+        },
+        errors: {},
     }
 
     savePostHandler = () => {
-        const data = {
-            title: this.state.title,
-            body: this.state.content,
-            author: this.state.author
-        };
+        // const data = {
+        //     title: this.state.title,
+        //     body: this.state.content
+        // };
 
-        axios.post('/posts', data)
-            .then(reponse => {
-                this.setState({
-                    submitted: true
-                })
+        // axios.post('/posts', data)
+        //     .then(reponse => {
+        //         this.setState({
+        //             submitted: true
+        //         })
+        //     });
+    }
+
+    onSubmitPost = (event) => {
+        event.preventDefault();
+        const errors = this.validate(this.state.data);
+        this.setState({ errors })
+        if (Object.keys(errors).length === 0) {
+            this.props.onSavePost({
+                title: this.state.data.title,
+                body: this.state.data.content
             });
+        }
+    }
+
+    validate = (data) => {
+        const errors = {};
+        if (Validator.isEmpty(data.title.trim())) {
+            errors.title = 'Title can\'t be blank. Please input a title.';
+        }
+        if (Validator.isEmpty(data.content.trim())) {
+            errors.content = 'Content can\'t be blank. Please enter content.';
+        }
+        return errors;
+    }
+
+    onChange = e => this.setState({
+        data: { ...this.state.data, [e.target.name]: e.target.value }
+    })
+
+
+    componentDidMount() {
+        if (!this.props.isAuthenicated) {
+            this.props.history.push('/auth');
+        }
     }
 
     render() {
+        const { data, errors } = this.state;
 
         let redirect = null;
 
-        if (this.state.submitted) {
+        if (this.props.isPostSubmitted) {
             redirect = <Redirect to="/" />;
         }
+
         return (
             <div className="NewPost">
                 {redirect}
-                <h1>Add a Post</h1>
-                <label>Title</label>
-                <input type="text" value={this.state.title} onChange={(event) => this.setState({ title: event.target.value })} />
-                <label>Content</label>
-                <textarea rows="4" value={this.state.content} onChange={(event) => this.setState({ content: event.target.value })} />
-                <label>Author</label>
-                <select value={this.state.author} onChange={(event) => this.setState({ author: event.target.value })}>
-                    <option value="Max">Max</option>
-                    <option value="Manu">Manu</option>
-                </select>
-                <button onClick={this.savePostHandler}>Add Post</button>
+                <form onSubmit={this.onSubmitPost}>
+                    <h1>Add New Post</h1>
+                    <div>
+                        <label>Title</label>
+                        <input type="text"
+                            name="title"
+                            placeholder="Enter title"
+                            value={data.title}
+                            onChange={this.onChange}
+                        />
+                        {errors.title && <InLineError text={errors.title} />}
+                    </div>
+                    <div>
+                        <label>Content</label>
+                        <textarea rows="4"
+                            name="content"
+                            placeholder="Enter content"
+                            value={data.content}
+                            onChange={this.onChange} />
+                        {errors.content && <InLineError text={errors.content} />}
+                    </div>
+                    <button>Add Post</button>
+                    {this.props.errors && <p style={{ color: "Red" }}>Unable to save request. Please try again later...</p>}
+                </form>
             </div>
         );
     }
 }
 
-export default NewPost;
+const mapStateToProps = state => {
+    return {
+        isAuthenicated: state.authReducer.token != null,
+        isPostSubmitted: state.postsReducer.newPostSubmitted,
+        error: state.postsReducer.error
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onSavePost: (inputPostParam) => dispatch(actions.saveNewPost(inputPostParam))       
+    }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewPost);

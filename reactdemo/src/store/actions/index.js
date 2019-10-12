@@ -18,9 +18,14 @@
 //     fetchOrdersStart
 // } from './order';
 
-export { 
+export {
     authenticate,
-    // logOut,
-    // setAuthRedirectPath,
-    // authCheckState
- } from './auth'
+} from './auth';
+
+export {
+    fetchPosts,
+    fetchPostOnSelection,
+    fetchSelectedPost,
+    saveNewPost,
+    initialisePostSubmitted
+} from './posts'

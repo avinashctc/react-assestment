@@ -1,34 +1,82 @@
 import React, { Component } from 'react';
-import './Auth.css';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import * as actions from '../../store/actions/index';
+import Validator from 'validator';
 
+import './Auth.css';
+import * as actions from '../../store/actions/index';
+import InLineError from '../../components/InLineError/InLineError';
 
 class Auth extends Component {
 
     state = {
-        userId: '',
-        password: '',
-        isLoggedIn: true
+        data: {
+            email: '',
+            password: '',
+        },
+        errors: {}
     }
 
 
-    loginHandler = (event) => {
+    onSubmit = (event) => {
         event.preventDefault();
-        this.props.onAuthenticate(this.state.controls.email.value, this.state.controls.password.value, this.state.isLoggedIn);
+        const errors = this.validate(this.state.data);
+        this.setState({ errors })
+        if (Object.keys(errors).length === 0) {
+            this.props.onAuthenticate(this.state.data.email, this.state.data.password);
+        }
     }
+
+    validate = (data) => {
+        const errors = {};
+        if (!Validator.isEmail(data.email)) {
+            errors.email = 'Invalid email. Please enter a valid email ID';
+        }
+        if (Validator.isEmpty(data.password)) {
+            errors.password = 'Password can\'t be blank. Please enter a password.';
+        }
+        return errors;
+    }
+
+    onChange = e => this.setState({
+        data: { ...this.state.data, [e.target.name]: e.target.value }
+    })
 
     render() {
+        const { data, errors } = this.state;
+
+        let redirectTo = null;
+
+        if (this.props.isAuthenticated) {
+            redirectTo = <Redirect to="/new-post" />
+        }       
+
         return (
             <div className="Auth">
-                {/* {redirect} */}
-                <form onSubmit={this.loginHandler}>
-                    <h1>Login</h1>
-                    <label>User ID</label>
-                    <input type="text" value={this.state.userId} onChange={(event) => this.setState({ userId: event.target.value })} />
-                    <label>Password</label>
-                    <input type="password" value={this.state.password} onChange={(event) => this.setState({ password: event.target.value })} />
+                {redirectTo}
+                <form onSubmit={this.onSubmit}>
+                    <h1>Please login to add a post</h1>
+                    <div>
+                        <label>Email</label>
+                        <input type="email"
+                            name="email"
+                            placeholder="example@example.com"
+                            value={data.email}
+                            onChange={this.onChange}
+                        />
+                        {errors.email && <InLineError text={errors.email} />}
+                    </div>
+                    <div>
+                        <label>Password</label>
+                        <input type="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            value={data.password}
+                            onChange={this.onChange} />
+                        {errors.password && <InLineError text={errors.password} />}
+                    </div>
                     <button>Log in</button>
+                    {this.props.errors && <p style={{ color: "Red" }}>Invalid login credentials !!</p>}
                 </form>
             </div>
         );
@@ -37,18 +85,14 @@ class Auth extends Component {
 
 const mapStateToProps = state => {
     return {
-        // loading: state.auth.loading,
-        // error: state.auth.error,
-        // isAuthenticated: state.auth.token != null,
-        // buildingBurger: state.burgerReducer.building,
-        // authRedirectPath: state.auth.authRedirectPath
+        isAuthenticated: state.authReducer.token != null,
+        errors: state.authReducer.errors
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onAuthenticate: (email, password, isSignup) => dispatch(actions.authenticate(email, password, isSignup)),
-        // onSetAuthRedirectPath: () => dispatch(actions.setAuthRedirectPath('/'))
+        onAuthenticate: (email, password) => dispatch(actions.authenticate(email, password)),
     }
 }
 

@@ -1,20 +1,11 @@
-import React, { Component } from 'react';
-
-import { BrowserRouter } from 'react-router-dom';
+import React from 'react';
 
 import Blog from './containers/Blog/Blog';
 
-class App extends Component {
-  render() {
-    return (
-      <BrowserRouter>
-        <div className="App">
-          <Blog />
-        </div>
-      </BrowserRouter>
+const app = () => (
+  <div className="App">
+    <Blog />
+  </div>
+)
 
-    );
-  }
-}
-
-export default App;
+export default app;
